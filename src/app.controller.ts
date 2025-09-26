@@ -13,4 +13,18 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello();
   }
+
+  @Get('health')
+  @ApiOperation({ summary: 'Health check endpoint' })
+  @ApiResponse({ status: 200, description: 'Returns health status' })
+  getHealth() {
+    return this.appService.getHealth();
+  }
+
+  @Get('ready')
+  @ApiOperation({ summary: 'Readiness check endpoint' })
+  @ApiResponse({ status: 200, description: 'Returns readiness status' })
+  getReadiness() {
+    return this.appService.getReadiness();
+  }
 }

@@ -11,7 +11,7 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
+    "start:prod": "bun dist/main.js",
     "start:factory": "nest start --entryFile src/modules/factory/main",
     "start:factory:dev": "nest start --watch --entryFile src/modules/factory/main",
     "start:delegation": "nest start --entryFile src/modules/delegation/main",
@@ -21,7 +21,12 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "docker:build": "docker build -t lendr-api .",
+    "docker:run": "docker run -p 3000:3000 --env-file .env.production lendr-api",
+    "docker:dev": "docker-compose -f docker-compose.dev.yml up --build",
+    "docker:prod": "docker-compose up --build -d",
+    "deploy": "./deploy.sh"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
