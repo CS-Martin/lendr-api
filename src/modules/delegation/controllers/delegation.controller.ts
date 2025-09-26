@@ -1,8 +1,10 @@
 import {
   Controller,
   Get,
+  Post,
   Param,
   Query,
+  Body,
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
@@ -12,10 +14,18 @@ import {
   ApiResponse,
   ApiParam,
   ApiQuery,
+  ApiBody,
 } from '@nestjs/swagger';
 import { DelegationContractService } from '../services/delegation-contract.service';
 import { RentalAgreementDto } from '../dto/rental-agreement.dto';
-import { DelegationDto } from '../dto/delegation.dto';
+import {
+  DelegationDto,
+  InitiateDelegationRentalDto,
+  ActivateDelegationDto,
+  DepositNFTByLenderDto,
+  CompleteDelegationRentalDto,
+  DelegationContractResponseDto,
+} from '../dto/delegation.dto';
 import {
   RentalIdParamDto,
   NftQueryDto,
@@ -28,6 +38,153 @@ export class DelegationController {
   constructor(
     private readonly delegationContractService: DelegationContractService,
   ) {}
+
+  @Post('initiate-delegation-rental')
+  @ApiOperation({
+    summary: 'Initiate a delegation rental by paying required fees',
+  })
+  @ApiBody({ type: InitiateDelegationRentalDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Delegation rental initiated successfully',
+    type: DelegationContractResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid parameters',
+    type: ErrorResponseDto,
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Contract interaction failed',
+    type: ErrorResponseDto,
+  })
+  async initiateDelegationRental(
+    @Body() initiateDelegationRentalDto: InitiateDelegationRentalDto,
+  ) {
+    try {
+      const result =
+        await this.delegationContractService.initiateDelegationRental(
+          initiateDelegationRentalDto.rentalId,
+          initiateDelegationRentalDto.payment,
+        );
+      return {
+        result,
+        message: 'Delegation rental initiated successfully',
+      };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Post('activate-delegation')
+  @ApiOperation({
+    summary: 'Activate delegation for a rental agreement',
+  })
+  @ApiBody({ type: ActivateDelegationDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Delegation activated successfully',
+    type: DelegationContractResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid parameters',
+    type: ErrorResponseDto,
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Contract interaction failed',
+    type: ErrorResponseDto,
+  })
+  async activateDelegation(
+    @Body() activateDelegationDto: ActivateDelegationDto,
+  ) {
+    try {
+      const result = await this.delegationContractService.activateDelegation(
+        activateDelegationDto.rentalId,
+      );
+      return {
+        result,
+        message: 'Delegation activated successfully',
+      };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Post('deposit-nft-by-lender')
+  @ApiOperation({
+    summary: 'Deposit NFT by lender for a rental agreement',
+  })
+  @ApiBody({ type: DepositNFTByLenderDto })
+  @ApiResponse({
+    status: 201,
+    description: 'NFT deposited by lender successfully',
+    type: DelegationContractResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid parameters',
+    type: ErrorResponseDto,
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Contract interaction failed',
+    type: ErrorResponseDto,
+  })
+  async depositNFTByLender(
+    @Body() depositNFTByLenderDto: DepositNFTByLenderDto,
+  ) {
+    try {
+      const result = await this.delegationContractService.depositNFTByLender(
+        depositNFTByLenderDto.rentalId,
+      );
+      return {
+        result,
+        message: 'NFT deposited by lender successfully',
+      };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Post('complete-delegation-rental')
+  @ApiOperation({
+    summary: 'Complete delegation rental for a rental agreement',
+  })
+  @ApiBody({ type: CompleteDelegationRentalDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Delegation rental completed successfully',
+    type: DelegationContractResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid parameters',
+    type: ErrorResponseDto,
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Contract interaction failed',
+    type: ErrorResponseDto,
+  })
+  async completeDelegationRental(
+    @Body() completeDelegationRentalDto: CompleteDelegationRentalDto,
+  ) {
+    try {
+      const result =
+        await this.delegationContractService.completeDelegationRental(
+          completeDelegationRentalDto.rentalId,
+        );
+      return {
+        result,
+        message: 'Delegation rental completed successfully',
+      };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 
   @Get('rental-agreement/:rentalId')
   @ApiOperation({ summary: 'Get rental agreement details by ID' })

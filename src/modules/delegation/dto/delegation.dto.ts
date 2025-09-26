@@ -27,3 +27,55 @@ export class DelegationQueryDto {
   })
   tokenId: string;
 }
+
+export class InitiateDelegationRentalDto {
+  @ApiProperty({
+    description: 'Rental agreement ID',
+    example: '1',
+  })
+  rentalId: string;
+
+  @ApiProperty({
+    description: 'Payment amount in wei (rental fee)',
+    example: '1000000000000000000',
+  })
+  payment: string;
+}
+
+export class ActivateDelegationDto {
+  @ApiProperty({
+    description: 'Rental agreement ID',
+    example: '1',
+  })
+  rentalId: string;
+}
+
+export class DepositNFTByLenderDto {
+  @ApiProperty({
+    description: 'Rental agreement ID',
+    example: '1',
+  })
+  rentalId: string;
+}
+
+export class CompleteDelegationRentalDto {
+  @ApiProperty({
+    description: 'Rental agreement ID',
+    example: '1',
+  })
+  rentalId: string;
+}
+
+export class DelegationContractResponseDto {
+  @ApiProperty({
+    description: 'Transaction hash or rental ID',
+    example: '0x1234567890abcdef...',
+  })
+  result: string;
+
+  @ApiProperty({
+    description: 'Success message',
+    example: 'Delegation rental initiated successfully',
+  })
+  message: string;
+}

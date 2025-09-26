@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { publicClient } from '../../../viem/viem.config';
+import { publicClient, decodeEventLog } from '../../../viem/viem.config';
+import { WalletService } from '../../../viem/wallet.service';
 import {
   DELEGATION_REGISTRY_ADDRESS,
   DELEGATION_REGISTRY_ABI,
@@ -28,6 +29,7 @@ export interface RentalAgreement {
 
 @Injectable()
 export class DelegationContractService {
+  constructor(private readonly walletService: WalletService) {}
   /**
    * Get rental agreement details by rental ID
    * @param rentalId - The rental agreement ID
@@ -131,6 +133,207 @@ export class DelegationContractService {
       return transformBigIntToString(result) as string;
     } catch (error) {
       throw new Error(`Failed to get total hourly fee: ${error.message}`);
+    }
+  }
+
+  /**
+   * Initiate a delegation rental by paying the required fees
+   * @param rentalId - The rental agreement ID
+   * @param payment - The payment amount in wei
+   * @returns Promise<string> - Transaction hash or rental ID
+   */
+  async initiateDelegationRental(
+    rentalId: string,
+    payment: string,
+  ): Promise<string> {
+    try {
+      const hash = await this.walletService.getWalletClient().writeContract({
+        address: DELEGATION_REGISTRY_ADDRESS,
+        abi: DELEGATION_REGISTRY_ABI,
+        functionName: 'initiateDelegationRental',
+        args: [BigInt(rentalId)],
+        value: BigInt(payment),
+        chain: this.walletService.getWalletClient().chain,
+        account: this.walletService.getWalletClient().account,
+      });
+
+      const receipt = await publicClient.waitForTransactionReceipt({ hash });
+
+      // Look for relevant events in the transaction logs
+      const event = receipt.logs.find((log) => {
+        try {
+          const decoded = decodeEventLog({
+            abi: DELEGATION_REGISTRY_ABI,
+            data: log.data,
+            topics: log.topics,
+          });
+          return (
+            decoded.eventName === 'RentalInitiated' ||
+            decoded.eventName === 'StateChanged'
+          );
+        } catch {
+          return false;
+        }
+      });
+
+      if (event) {
+        const decoded = decodeEventLog({
+          abi: DELEGATION_REGISTRY_ABI,
+          data: event.data,
+          topics: event.topics,
+        });
+        return (decoded.args as any).rentalId?.toString() || hash;
+      }
+      return hash;
+    } catch (error) {
+      throw new Error(`Failed to initiate delegation rental: ${error.message}`);
+    }
+  }
+
+  /**
+   * Activate delegation for a rental agreement
+   * @param rentalId - The rental agreement ID
+   * @returns Promise<string> - Transaction hash or rental ID
+   */
+  async activateDelegation(rentalId: string): Promise<string> {
+    try {
+      const hash = await this.walletService.getWalletClient().writeContract({
+        address: DELEGATION_REGISTRY_ADDRESS,
+        abi: DELEGATION_REGISTRY_ABI,
+        functionName: 'activateDelegation',
+        args: [BigInt(rentalId)],
+        chain: this.walletService.getWalletClient().chain,
+        account: this.walletService.getWalletClient().account,
+      });
+
+      const receipt = await publicClient.waitForTransactionReceipt({ hash });
+
+      // Look for relevant events in the transaction logs
+      const event = receipt.logs.find((log) => {
+        try {
+          const decoded = decodeEventLog({
+            abi: DELEGATION_REGISTRY_ABI,
+            data: log.data,
+            topics: log.topics,
+          });
+          return (
+            decoded.eventName === 'DelegationActivated' ||
+            decoded.eventName === 'StateChanged'
+          );
+        } catch {
+          return false;
+        }
+      });
+
+      if (event) {
+        const decoded = decodeEventLog({
+          abi: DELEGATION_REGISTRY_ABI,
+          data: event.data,
+          topics: event.topics,
+        });
+        return (decoded.args as any).rentalId?.toString() || hash;
+      }
+      return hash;
+    } catch (error) {
+      throw new Error(`Failed to activate delegation: ${error.message}`);
+    }
+  }
+
+  /**
+   * Deposit NFT by lender for a rental agreement
+   * @param rentalId - The rental agreement ID
+   * @returns Promise<string> - Transaction hash or rental ID
+   */
+  async depositNFTByLender(rentalId: string): Promise<string> {
+    try {
+      const hash = await this.walletService.getWalletClient().writeContract({
+        address: DELEGATION_REGISTRY_ADDRESS,
+        abi: DELEGATION_REGISTRY_ABI,
+        functionName: 'depositNFTByLender',
+        args: [BigInt(rentalId)],
+        chain: this.walletService.getWalletClient().chain,
+        account: this.walletService.getWalletClient().account,
+      });
+
+      const receipt = await publicClient.waitForTransactionReceipt({ hash });
+
+      // Look for relevant events in the transaction logs
+      const event = receipt.logs.find((log) => {
+        try {
+          const decoded = decodeEventLog({
+            abi: DELEGATION_REGISTRY_ABI,
+            data: log.data,
+            topics: log.topics,
+          });
+          return (
+            decoded.eventName === 'NftDepositedByLender' ||
+            decoded.eventName === 'StateChanged'
+          );
+        } catch {
+          return false;
+        }
+      });
+
+      if (event) {
+        const decoded = decodeEventLog({
+          abi: DELEGATION_REGISTRY_ABI,
+          data: event.data,
+          topics: event.topics,
+        });
+        return (decoded.args as any).rentalId?.toString() || hash;
+      }
+      return hash;
+    } catch (error) {
+      throw new Error(`Failed to deposit NFT by lender: ${error.message}`);
+    }
+  }
+
+  /**
+   * Complete delegation rental for a rental agreement
+   * @param rentalId - The rental agreement ID
+   * @returns Promise<string> - Transaction hash or rental ID
+   */
+  async completeDelegationRental(rentalId: string): Promise<string> {
+    try {
+      const hash = await this.walletService.getWalletClient().writeContract({
+        address: DELEGATION_REGISTRY_ADDRESS,
+        abi: DELEGATION_REGISTRY_ABI,
+        functionName: 'completeDelegationRental',
+        args: [BigInt(rentalId)],
+        chain: this.walletService.getWalletClient().chain,
+        account: this.walletService.getWalletClient().account,
+      });
+
+      const receipt = await publicClient.waitForTransactionReceipt({ hash });
+
+      // Look for relevant events in the transaction logs
+      const event = receipt.logs.find((log) => {
+        try {
+          const decoded = decodeEventLog({
+            abi: DELEGATION_REGISTRY_ABI,
+            data: log.data,
+            topics: log.topics,
+          });
+          return (
+            decoded.eventName === 'DelegationRentalCompleted' ||
+            decoded.eventName === 'StateChanged'
+          );
+        } catch {
+          return false;
+        }
+      });
+
+      if (event) {
+        const decoded = decodeEventLog({
+          abi: DELEGATION_REGISTRY_ABI,
+          data: event.data,
+          topics: event.topics,
+        });
+        return (decoded.args as any).rentalId?.toString() || hash;
+      }
+      return hash;
+    } catch (error) {
+      throw new Error(`Failed to complete delegation rental: ${error.message}`);
     }
   }
 }

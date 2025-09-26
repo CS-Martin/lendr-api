@@ -12,12 +12,13 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Lendr API')
     .setDescription(
-      'Complete API for interacting with Factory and Delegation smart contracts on Polygon Amoy testnet',
+      'Complete API for interacting with Factory, Delegation, and Collateral smart contracts on Polygon Amoy testnet',
     )
     .setVersion('1.0')
     .addTag('app', 'Application endpoints')
     .addTag('factory', 'Factory contract operations')
     .addTag('delegation', 'Delegation contract operations')
+    .addTag('collateral', 'Collateral contract operations')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
