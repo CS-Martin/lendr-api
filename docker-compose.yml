@@ -1,25 +1,15 @@
 services:
   lendr-api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - '3000:3000'
-    environment:
-      - NODE_ENV=production
-      - PORT=3000
-      # Add your environment variables here
-      # - RPC_URL_AMOY=your_rpc_url
-      # - RELAYER_PRIVATE_KEY=your_private_key
+    image: lendrapi/lendr-api:latest
     env_file:
-      - .env.production
+      - .env
     restart: unless-stopped
     healthcheck:
       test:
         [
-          'CMD',
-          'node',
-          '-e',
+          "CMD",
+          "node",
+          "-e",
           "require('http').get('http://localhost:3000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })",
         ]
       interval: 30s
@@ -28,25 +18,41 @@ services:
       start_period: 40s
     networks:
       - lendr-network
-
-  # Optional: Add a reverse proxy (nginx)
-  nginx:
-    image: nginx:alpine
-    ports:
-      - '80:80'
-      - '443:443'
+      - system
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      # - ./ssl:/etc/nginx/ssl:ro  # Uncomment if using SSL
-    depends_on:
-      - lendr-api
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+
+  lendr-api-staging:
+    image: lendrapi/lendr-api:staging
     restart: unless-stopped
+    env_file:
+      - .env
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:3000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     networks:
       - lendr-network
+      - system
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+    volumes:
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
 
 networks:
   lendr-network:
     driver: bridge
-# Optional: Add volumes for persistent data
-# volumes:
-#   app-data:
+  system:
+    external: true

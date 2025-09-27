@@ -1,0 +1,43 @@
+name: 2. PRODUCTION - Build and Deploy
+
+on:
+    push:
+        tags:
+            - "v*"
+
+permissions:
+    contents: read
+    packages: write
+
+jobs:
+    build-and-deploy:
+        runs-on: "ubuntu-latest"
+
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Log in to Docker Hub
+              uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3
+              with:
+                  registry: https://index.docker.io/v1/
+                  username: ${{ secrets.DOCKER_USERNAME }}
+                  password: ${{ secrets.DOCKER_PASSWORD }}
+
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+
+            - name: Extract tag name
+              id: tag
+              run: echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+            - name: Build and push production images
+              uses: docker/build-push-action@v4
+              with:
+                  context: .
+                  file: ./Dockerfile
+                  tags: |
+                      lendrapi/lendr-api:latest
+                      lendrapi/lendr-api:${{ steps.tag.outputs.tag }}
+                  push: true
