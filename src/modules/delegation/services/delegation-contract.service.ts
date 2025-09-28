@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { publicClient, decodeEventLog } from '../../../viem/viem.config';
 import { WalletService } from '../../../viem/wallet.service';
+import { createWalletClient, http } from 'viem';
+import { privateKeyToAccount } from 'viem/accounts';
+import { polygonAmoy } from 'viem/chains';
 import {
   DELEGATION_REGISTRY_ADDRESS,
   DELEGATION_REGISTRY_ABI,
@@ -137,6 +140,20 @@ export class DelegationContractService {
   }
 
   /**
+   * Create a wallet client with a specific private key
+   * @param privateKey - The private key (without 0x prefix)
+   * @returns Wallet client instance
+   */
+  private createWalletClientWithPrivateKey(privateKey: string) {
+    const account = privateKeyToAccount(privateKey as `0x${string}`);
+    return createWalletClient({
+      account,
+      chain: polygonAmoy,
+      transport: http(),
+    });
+  }
+
+  /**
    * Initiate a delegation rental by paying the required fees
    * @param rentalId - The rental agreement ID
    * @param payment - The payment amount in wei
@@ -147,14 +164,19 @@ export class DelegationContractService {
     payment: string,
   ): Promise<string> {
     try {
-      const hash = await this.walletService.getWalletClient().writeContract({
+      // Use hardcoded private key for this specific transaction
+      const walletClient = this.createWalletClientWithPrivateKey(
+        '0x5c4c1b3d2699664d27f6843a7ae04bd15aa21425746633711b3766f9e8fad616',
+      );
+
+      const hash = await walletClient.writeContract({
         address: DELEGATION_REGISTRY_ADDRESS,
         abi: DELEGATION_REGISTRY_ABI,
         functionName: 'initiateDelegationRental',
         args: [BigInt(rentalId)],
         value: BigInt(payment),
-        chain: this.walletService.getWalletClient().chain,
-        account: this.walletService.getWalletClient().account,
+        chain: walletClient.chain,
+        account: walletClient.account,
       });
 
       const receipt = await publicClient.waitForTransactionReceipt({ hash });
