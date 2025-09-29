@@ -23,7 +23,6 @@ import {
   NumberResponseDto,
 } from '../dto/factory-contract.dto';
 import {
-  ErrorResponseDto,
   BadRequestErrorResponseDto,
   InternalServerErrorResponseDto,
 } from '../../../shared/dto/common.dto';

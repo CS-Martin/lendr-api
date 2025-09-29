@@ -18,8 +18,14 @@ import { CustomNftCollectionContractService } from '../services/custom-nft-colle
 import {
   ApproveDto,
   CustomNftCollectionResponseDto,
-  ErrorResponseDto,
+  AddressResponseDto,
+  NumberResponseDto,
+  StringResponseDto,
 } from '../dto/custom-nft-collection.dto';
+import {
+  BadRequestErrorResponseDto,
+  InternalServerErrorResponseDto,
+} from '../../../shared/dto/common.dto';
 
 @ApiTags('custom-nft-collection')
 @Controller('custom-nft-collection')
@@ -31,6 +37,8 @@ export class CustomNftCollectionController {
   @Post('approve')
   @ApiOperation({
     summary: 'Approve an address to manage a specific NFT token',
+    description:
+      'Grants approval for a specific address to manage a particular NFT token in the collection',
   })
   @ApiBody({ type: ApproveDto })
   @ApiResponse({
@@ -40,29 +48,29 @@ export class CustomNftCollectionController {
   })
   @ApiResponse({
     status: 400,
-    description: 'Invalid parameters',
-    type: ErrorResponseDto,
+    description: 'Invalid parameters or validation error',
+    type: BadRequestErrorResponseDto,
   })
   @ApiResponse({
     status: 500,
-    description: 'Contract interaction failed',
-    type: ErrorResponseDto,
+    description: 'Contract interaction failed or blockchain error',
+    type: InternalServerErrorResponseDto,
   })
   async approve(@Body() approveDto: ApproveDto) {
-    try {
-      const result =
-        await this.customNftCollectionContractService.approve(approveDto);
-      return {
-        result,
-        message: 'NFT approved successfully',
-      };
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    const result =
+      await this.customNftCollectionContractService.approve(approveDto);
+    return {
+      result,
+      message: 'NFT approved successfully',
+    };
   }
 
   @Get('approved/:tokenId')
-  @ApiOperation({ summary: 'Get the approved address for a specific token' })
+  @ApiOperation({
+    summary: 'Get the approved address for a specific token',
+    description:
+      'Returns the address that has been approved to manage the specified NFT token',
+  })
   @ApiParam({
     name: 'tokenId',
     description: 'Token ID',
@@ -71,45 +79,32 @@ export class CustomNftCollectionController {
   @ApiResponse({
     status: 200,
     description: 'Approved address retrieved successfully',
-    schema: {
-      type: 'object',
-      properties: {
-        result: {
-          type: 'string',
-          example: '0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6',
-        },
-        message: {
-          type: 'string',
-          example: 'Approved address retrieved successfully',
-        },
-      },
-    },
+    type: AddressResponseDto,
   })
   @ApiResponse({
     status: 400,
     description: 'Invalid token ID',
-    type: ErrorResponseDto,
+    type: BadRequestErrorResponseDto,
   })
   @ApiResponse({
     status: 500,
-    description: 'Contract interaction failed',
-    type: ErrorResponseDto,
+    description: 'Contract interaction failed or blockchain error',
+    type: InternalServerErrorResponseDto,
   })
   async getApproved(@Param('tokenId') tokenId: string) {
-    try {
-      const result =
-        await this.customNftCollectionContractService.getApproved(tokenId);
-      return {
-        result,
-        message: 'Approved address retrieved successfully',
-      };
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    const result =
+      await this.customNftCollectionContractService.getApproved(tokenId);
+    return {
+      result,
+      message: 'Approved address retrieved successfully',
+    };
   }
 
   @Get('owner/:tokenId')
-  @ApiOperation({ summary: 'Get the owner of a specific token' })
+  @ApiOperation({
+    summary: 'Get the owner of a specific token',
+    description: 'Returns the current owner address of the specified NFT token',
+  })
   @ApiParam({
     name: 'tokenId',
     description: 'Token ID',
@@ -118,45 +113,32 @@ export class CustomNftCollectionController {
   @ApiResponse({
     status: 200,
     description: 'Token owner retrieved successfully',
-    schema: {
-      type: 'object',
-      properties: {
-        result: {
-          type: 'string',
-          example: '0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6',
-        },
-        message: {
-          type: 'string',
-          example: 'Token owner retrieved successfully',
-        },
-      },
-    },
+    type: AddressResponseDto,
   })
   @ApiResponse({
     status: 400,
     description: 'Invalid token ID',
-    type: ErrorResponseDto,
+    type: BadRequestErrorResponseDto,
   })
   @ApiResponse({
     status: 500,
-    description: 'Contract interaction failed',
-    type: ErrorResponseDto,
+    description: 'Contract interaction failed or blockchain error',
+    type: InternalServerErrorResponseDto,
   })
   async ownerOf(@Param('tokenId') tokenId: string) {
-    try {
-      const result =
-        await this.customNftCollectionContractService.ownerOf(tokenId);
-      return {
-        result,
-        message: 'Token owner retrieved successfully',
-      };
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    const result =
+      await this.customNftCollectionContractService.ownerOf(tokenId);
+    return {
+      result,
+      message: 'Token owner retrieved successfully',
+    };
   }
 
   @Get('balance/:owner')
-  @ApiOperation({ summary: 'Get the balance of NFTs for a specific address' })
+  @ApiOperation({
+    summary: 'Get the balance of NFTs for a specific address',
+    description: 'Returns the number of NFTs owned by the specified address',
+  })
   @ApiParam({
     name: 'owner',
     description: 'Owner address',
@@ -165,42 +147,32 @@ export class CustomNftCollectionController {
   @ApiResponse({
     status: 200,
     description: 'Balance retrieved successfully',
-    schema: {
-      type: 'object',
-      properties: {
-        result: { type: 'string', example: '5' },
-        message: {
-          type: 'string',
-          example: 'Balance retrieved successfully',
-        },
-      },
-    },
+    type: NumberResponseDto,
   })
   @ApiResponse({
     status: 400,
     description: 'Invalid owner address',
-    type: ErrorResponseDto,
+    type: BadRequestErrorResponseDto,
   })
   @ApiResponse({
     status: 500,
-    description: 'Contract interaction failed',
-    type: ErrorResponseDto,
+    description: 'Contract interaction failed or blockchain error',
+    type: InternalServerErrorResponseDto,
   })
   async balanceOf(@Param('owner') owner: string) {
-    try {
-      const result =
-        await this.customNftCollectionContractService.balanceOf(owner);
-      return {
-        result,
-        message: 'Balance retrieved successfully',
-      };
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    const result =
+      await this.customNftCollectionContractService.balanceOf(owner);
+    return {
+      result,
+      message: 'Balance retrieved successfully',
+    };
   }
 
   @Get('token-uri/:tokenId')
-  @ApiOperation({ summary: 'Get the token URI for a specific token' })
+  @ApiOperation({
+    summary: 'Get the token URI for a specific token',
+    description: 'Returns the metadata URI for the specified NFT token',
+  })
   @ApiParam({
     name: 'tokenId',
     description: 'Token ID',
@@ -209,74 +181,48 @@ export class CustomNftCollectionController {
   @ApiResponse({
     status: 200,
     description: 'Token URI retrieved successfully',
-    schema: {
-      type: 'object',
-      properties: {
-        result: {
-          type: 'string',
-          example: 'https://example.com/metadata/1',
-        },
-        message: {
-          type: 'string',
-          example: 'Token URI retrieved successfully',
-        },
-      },
-    },
+    type: StringResponseDto,
   })
   @ApiResponse({
     status: 400,
     description: 'Invalid token ID',
-    type: ErrorResponseDto,
+    type: BadRequestErrorResponseDto,
   })
   @ApiResponse({
     status: 500,
-    description: 'Contract interaction failed',
-    type: ErrorResponseDto,
+    description: 'Contract interaction failed or blockchain error',
+    type: InternalServerErrorResponseDto,
   })
   async tokenURI(@Param('tokenId') tokenId: string) {
-    try {
-      const result =
-        await this.customNftCollectionContractService.tokenURI(tokenId);
-      return {
-        result,
-        message: 'Token URI retrieved successfully',
-      };
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    const result =
+      await this.customNftCollectionContractService.tokenURI(tokenId);
+    return {
+      result,
+      message: 'Token URI retrieved successfully',
+    };
   }
 
   @Get('total-minted')
-  @ApiOperation({ summary: 'Get the total number of minted tokens' })
+  @ApiOperation({
+    summary: 'Get the total number of minted tokens',
+    description:
+      'Returns the total number of tokens that have been minted in this NFT collection',
+  })
   @ApiResponse({
     status: 200,
     description: 'Total minted count retrieved successfully',
-    schema: {
-      type: 'object',
-      properties: {
-        result: { type: 'string', example: '100' },
-        message: {
-          type: 'string',
-          example: 'Total minted count retrieved successfully',
-        },
-      },
-    },
+    type: NumberResponseDto,
   })
   @ApiResponse({
     status: 500,
-    description: 'Contract interaction failed',
-    type: ErrorResponseDto,
+    description: 'Contract interaction failed or blockchain error',
+    type: InternalServerErrorResponseDto,
   })
   async totalMinted() {
-    try {
-      const result =
-        await this.customNftCollectionContractService.totalMinted();
-      return {
-        result,
-        message: 'Total minted count retrieved successfully',
-      };
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    const result = await this.customNftCollectionContractService.totalMinted();
+    return {
+      result,
+      message: 'Total minted count retrieved successfully',
+    };
   }
 }

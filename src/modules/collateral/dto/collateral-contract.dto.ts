@@ -184,6 +184,48 @@ export class CollateralContractResponseDto {
   message: string;
 }
 
+export class AddressResponseDto {
+  @ApiProperty({
+    description: 'Address result',
+    example: '0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6',
+  })
+  result: string;
+
+  @ApiProperty({
+    description: 'Success message',
+    example: 'Address retrieved successfully',
+  })
+  message: string;
+}
+
+export class StringResponseDto {
+  @ApiProperty({
+    description: 'String result',
+    example: '1000000000000000000',
+  })
+  result: string;
+
+  @ApiProperty({
+    description: 'Success message',
+    example: 'Value retrieved successfully',
+  })
+  message: string;
+}
+
+export class BooleanResponseDto {
+  @ApiProperty({
+    description: 'Boolean result',
+    example: true,
+  })
+  result: boolean;
+
+  @ApiProperty({
+    description: 'Success message',
+    example: 'Status retrieved successfully',
+  })
+  message: string;
+}
+
 export class RentalIdParamDto {
   @ApiProperty({
     description: 'Rental agreement ID',
@@ -198,20 +240,6 @@ export class AddressParamDto {
     example: '0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6',
   })
   address: string;
-}
-
-export class ErrorResponseDto {
-  @ApiProperty({
-    description: 'Error message',
-    example: 'Invalid parameters',
-  })
-  message: string;
-
-  @ApiProperty({
-    description: 'Error status code',
-    example: 400,
-  })
-  statusCode: number;
 }
 
 // Zod validation schemas

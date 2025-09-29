@@ -29,18 +29,46 @@ export class CustomNftCollectionResponseDto {
   message: string;
 }
 
-export class ErrorResponseDto {
+export class AddressResponseDto {
   @ApiProperty({
-    description: 'Error message',
-    example: 'Invalid parameters',
+    description: 'Address result',
+    example: '0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6',
   })
-  message: string;
+  result: string;
 
   @ApiProperty({
-    description: 'Error status code',
-    example: 400,
+    description: 'Success message',
+    example: 'Address retrieved successfully',
   })
-  statusCode: number;
+  message: string;
+}
+
+export class NumberResponseDto {
+  @ApiProperty({
+    description: 'Numeric result',
+    example: '5',
+  })
+  result: string;
+
+  @ApiProperty({
+    description: 'Success message',
+    example: 'Value retrieved successfully',
+  })
+  message: string;
+}
+
+export class StringResponseDto {
+  @ApiProperty({
+    description: 'String result',
+    example: 'https://example.com/metadata/1',
+  })
+  result: string;
+
+  @ApiProperty({
+    description: 'Success message',
+    example: 'String retrieved successfully',
+  })
+  message: string;
 }
 
 // Zod validation schemas

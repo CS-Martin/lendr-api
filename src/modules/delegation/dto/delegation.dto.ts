@@ -79,3 +79,31 @@ export class DelegationContractResponseDto {
   })
   message: string;
 }
+
+export class AddressResponseDto {
+  @ApiProperty({
+    description: 'Address result',
+    example: '0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6',
+  })
+  result: string;
+
+  @ApiProperty({
+    description: 'Success message',
+    example: 'Address retrieved successfully',
+  })
+  message: string;
+}
+
+export class StringResponseDto {
+  @ApiProperty({
+    description: 'String result',
+    example: '1640995200',
+  })
+  result: string;
+
+  @ApiProperty({
+    description: 'Success message',
+    example: 'Value retrieved successfully',
+  })
+  message: string;
+}
