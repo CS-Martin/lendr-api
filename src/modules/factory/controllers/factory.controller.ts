@@ -19,8 +19,14 @@ import {
   CreateCollateralRentalAgreementDto,
   CreateDelegationRentalAgreementDto,
   FactoryContractResponseDto,
+  AddressResponseDto,
+  NumberResponseDto,
 } from '../dto/factory-contract.dto';
-import { ErrorResponseDto } from '../../../shared/dto/common.dto';
+import {
+  ErrorResponseDto,
+  BadRequestErrorResponseDto,
+  InternalServerErrorResponseDto,
+} from '../../../shared/dto/common.dto';
 
 @ApiTags('factory')
 @Controller('factory')
@@ -30,7 +36,11 @@ export class FactoryController {
   ) {}
 
   @Post('create-collateral-rental-agreement')
-  @ApiOperation({ summary: 'Create a collateral rental agreement' })
+  @ApiOperation({
+    summary: 'Create a collateral rental agreement',
+    description:
+      'Creates a new collateral-based rental agreement where the renter provides collateral instead of upfront payment',
+  })
   @ApiBody({ type: CreateCollateralRentalAgreementDto })
   @ApiResponse({
     status: 201,
@@ -39,13 +49,13 @@ export class FactoryController {
   })
   @ApiResponse({
     status: 400,
-    description: 'Invalid parameters',
-    type: ErrorResponseDto,
+    description: 'Invalid parameters or validation error',
+    type: BadRequestErrorResponseDto,
   })
   @ApiResponse({
     status: 500,
-    description: 'Contract interaction failed',
-    type: ErrorResponseDto,
+    description: 'Contract interaction failed or blockchain error',
+    type: InternalServerErrorResponseDto,
   })
   async createCollateralRentalAgreement(
     @Body()
@@ -62,7 +72,11 @@ export class FactoryController {
   }
 
   @Post('create-delegation-rental-agreement')
-  @ApiOperation({ summary: 'Create a delegation rental agreement' })
+  @ApiOperation({
+    summary: 'Create a delegation rental agreement',
+    description:
+      'Creates a new delegation-based rental agreement where the renter pays upfront and gets temporary access to the NFT',
+  })
   @ApiBody({ type: CreateDelegationRentalAgreementDto })
   @ApiResponse({
     status: 201,
@@ -71,13 +85,13 @@ export class FactoryController {
   })
   @ApiResponse({
     status: 400,
-    description: 'Invalid parameters',
-    type: ErrorResponseDto,
+    description: 'Invalid parameters or validation error',
+    type: BadRequestErrorResponseDto,
   })
   @ApiResponse({
     status: 500,
-    description: 'Contract interaction failed',
-    type: ErrorResponseDto,
+    description: 'Contract interaction failed or blockchain error',
+    type: InternalServerErrorResponseDto,
   })
   async createDelegationRentalAgreement(
     @Body()
@@ -94,16 +108,20 @@ export class FactoryController {
   }
 
   @Get('collateral-registry')
-  @ApiOperation({ summary: 'Get the collateral registry address' })
+  @ApiOperation({
+    summary: 'Get the collateral registry address',
+    description:
+      'Returns the address of the collateral registry contract that manages collateral-based rental agreements',
+  })
   @ApiResponse({
     status: 200,
     description: 'Collateral registry address retrieved successfully',
-    type: FactoryContractResponseDto,
+    type: AddressResponseDto,
   })
   @ApiResponse({
     status: 500,
     description: 'Contract interaction failed',
-    type: ErrorResponseDto,
+    type: InternalServerErrorResponseDto,
   })
   async getCollateralRegistry() {
     const result = await this.factoryContractService.getCollateralRegistry();
@@ -114,16 +132,20 @@ export class FactoryController {
   }
 
   @Get('delegation-registry')
-  @ApiOperation({ summary: 'Get the delegation registry address' })
+  @ApiOperation({
+    summary: 'Get the delegation registry address',
+    description:
+      'Returns the address of the delegation registry contract that manages delegation-based rental agreements',
+  })
   @ApiResponse({
     status: 200,
     description: 'Delegation registry address retrieved successfully',
-    type: FactoryContractResponseDto,
+    type: AddressResponseDto,
   })
   @ApiResponse({
     status: 500,
     description: 'Contract interaction failed',
-    type: ErrorResponseDto,
+    type: InternalServerErrorResponseDto,
   })
   async getDelegationRegistry() {
     const result = await this.factoryContractService.getDelegationRegistry();
@@ -134,16 +156,20 @@ export class FactoryController {
   }
 
   @Get('deployer')
-  @ApiOperation({ summary: 'Get the deployer address' })
+  @ApiOperation({
+    summary: 'Get the deployer address',
+    description:
+      'Returns the address of the account that deployed the factory contract',
+  })
   @ApiResponse({
     status: 200,
     description: 'Deployer address retrieved successfully',
-    type: FactoryContractResponseDto,
+    type: AddressResponseDto,
   })
   @ApiResponse({
     status: 500,
     description: 'Contract interaction failed',
-    type: ErrorResponseDto,
+    type: InternalServerErrorResponseDto,
   })
   async getDeployer() {
     const result = await this.factoryContractService.getDeployer();
@@ -154,7 +180,11 @@ export class FactoryController {
   }
 
   @Get('collateral-rental-agreement/:rentalId')
-  @ApiOperation({ summary: 'Get collateral rental agreement by ID' })
+  @ApiOperation({
+    summary: 'Get collateral rental agreement by ID',
+    description:
+      'Returns the contract address of a specific collateral rental agreement by its ID',
+  })
   @ApiParam({
     name: 'rentalId',
     description: 'Rental agreement ID',
@@ -163,17 +193,17 @@ export class FactoryController {
   @ApiResponse({
     status: 200,
     description: 'Collateral rental agreement address retrieved successfully',
-    type: FactoryContractResponseDto,
+    type: AddressResponseDto,
   })
   @ApiResponse({
     status: 400,
     description: 'Invalid rental ID',
-    type: ErrorResponseDto,
+    type: BadRequestErrorResponseDto,
   })
   @ApiResponse({
     status: 500,
     description: 'Contract interaction failed',
-    type: ErrorResponseDto,
+    type: InternalServerErrorResponseDto,
   })
   async getCollateralRentalAgreementById(@Param('rentalId') rentalId: string) {
     const rentalIdNumber = parseInt(rentalId, 10);
@@ -194,16 +224,20 @@ export class FactoryController {
   }
 
   @Get('fee-bps')
-  @ApiOperation({ summary: 'Get the platform fee in basis points' })
+  @ApiOperation({
+    summary: 'Get the platform fee in basis points',
+    description:
+      'Returns the platform fee percentage expressed in basis points (1 basis point = 0.01%)',
+  })
   @ApiResponse({
     status: 200,
     description: 'Platform fee retrieved successfully',
-    type: FactoryContractResponseDto,
+    type: NumberResponseDto,
   })
   @ApiResponse({
     status: 500,
     description: 'Contract interaction failed',
-    type: ErrorResponseDto,
+    type: InternalServerErrorResponseDto,
   })
   async getFeeBps() {
     const result = await this.factoryContractService.getFeeBps();
@@ -214,16 +248,20 @@ export class FactoryController {
   }
 
   @Get('total-rentals')
-  @ApiOperation({ summary: 'Get the total number of rentals' })
+  @ApiOperation({
+    summary: 'Get the total number of rentals',
+    description:
+      'Returns the total number of rental agreements created through this factory contract',
+  })
   @ApiResponse({
     status: 200,
     description: 'Total rentals retrieved successfully',
-    type: FactoryContractResponseDto,
+    type: NumberResponseDto,
   })
   @ApiResponse({
     status: 500,
     description: 'Contract interaction failed',
-    type: ErrorResponseDto,
+    type: InternalServerErrorResponseDto,
   })
   async getTotalRentals() {
     const result = await this.factoryContractService.getTotalRentals();

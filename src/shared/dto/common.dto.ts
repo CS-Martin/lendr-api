@@ -47,3 +47,55 @@ export class ErrorResponseDto {
   })
   path: string;
 }
+
+export class BadRequestErrorResponseDto {
+  @ApiProperty({
+    description: 'Error message',
+    example: 'Invalid parameters or validation error',
+  })
+  message: string;
+
+  @ApiProperty({
+    description: 'HTTP status code',
+    example: 400,
+  })
+  statusCode: number;
+
+  @ApiProperty({
+    description: 'Error timestamp',
+    example: '2024-01-01T00:00:00.000Z',
+  })
+  timestamp: string;
+
+  @ApiProperty({
+    description: 'Request path',
+    example: '/factory/create-collateral-rental-agreement',
+  })
+  path: string;
+}
+
+export class InternalServerErrorResponseDto {
+  @ApiProperty({
+    description: 'Error message',
+    example: 'Contract interaction failed or blockchain error',
+  })
+  message: string;
+
+  @ApiProperty({
+    description: 'HTTP status code',
+    example: 500,
+  })
+  statusCode: number;
+
+  @ApiProperty({
+    description: 'Error timestamp',
+    example: '2024-01-01T00:00:00.000Z',
+  })
+  timestamp: string;
+
+  @ApiProperty({
+    description: 'Request path',
+    example: '/factory/create-collateral-rental-agreement',
+  })
+  path: string;
+}

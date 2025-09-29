@@ -107,14 +107,42 @@ export class RentalIdParamDto {
 
 export class FactoryContractResponseDto {
   @ApiProperty({
-    description: 'Contract address or value returned from the function',
-    example: '0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6',
+    description: 'Smart contract rental agreement ID',
+    example: '1',
   })
   result: string;
 
   @ApiProperty({
     description: 'Success message',
     example: 'Operation completed successfully',
+  })
+  message: string;
+}
+
+export class AddressResponseDto {
+  @ApiProperty({
+    description: 'Contract address',
+    example: '0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6',
+  })
+  result: string;
+
+  @ApiProperty({
+    description: 'Success message',
+    example: 'Address retrieved successfully',
+  })
+  message: string;
+}
+
+export class NumberResponseDto {
+  @ApiProperty({
+    description: 'Numeric result',
+    example: '100',
+  })
+  result: string;
+
+  @ApiProperty({
+    description: 'Success message',
+    example: 'Value retrieved successfully',
   })
   message: string;
 }
